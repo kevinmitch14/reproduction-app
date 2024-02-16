@@ -6,6 +6,7 @@ export default function page({ params }: { params: { num: string } }) {
   return (
     <div>
       <Link href={`/${next}`}>Page {next}</Link>
+      <Link href={`/${params.num}/nested`}>Go to nested</Link>
     </div>
   );
 }
