@@ -1,51 +1,37 @@
 import { Metadata } from "next";
 import React from "react";
-import axios from "axios";
-import { unstable_noStore } from "next/cache";
 
-async function getDataAxios() {
-  console.log("Calling getDataAxios()");
-  const res = await axios.get("https://jsonplaceholder.typicode.com/todos/1");
-  const data = await res.data;
-  return data;
+function getTime() {
+  return new Date().getTime().toString();
 }
 
-async function getDataFetch() {
-  console.log("getDataFetch()");
-  const res = await fetch("https://jsonplaceholder.typicode.com/todos/1");
-  const data = await res.json();
-  return data;
+async function getImage() {
+  const t1 = performance.now();
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+  const t2 = performance.now();
+  console.log(t2 - t1);
+  return "https://images.unsplash.com/photo-1682685797661-9e0c87f59c60?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxlZGl0b3JpYWwtZmVlZHwxfHx8ZW58MHx8fHx8";
 }
-
-const cachedFn = React.cache(() => {
-  console.log("CACHED axios");
-  return getDataAxios();
-});
 
 export async function generateMetadata(): Promise<Metadata> {
-  const data = await getDataFetch();
-  await getDataAxios();
-  await cachedFn();
   return {
-    title: data.title,
+    title: getTime(),
+    icons: [{ url: await getImage(), rel: "icon" }],
   };
 }
 
 export default async function RootLayout({ children }) {
-  unstable_noStore();
-  await getDataFetch();
-  await getDataFetch();
-  await getDataFetch();
-  await getDataAxios();
-  await getDataAxios();
-  await getDataAxios();
-  await cachedFn();
-  await cachedFn();
-  await cachedFn();
   return (
     <html>
       <head />
-      <body>{children}</body>
+      <body style={{ border: "1px solid red" }}>
+        Root layout
+        {/* <img
+          src="https://images.unsplash.com/photo-1682685797661-9e0c87f59c60?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxlZGl0b3JpYWwtZmVlZHwxfHx8ZW58MHx8fHx8"
+          alt="Image"
+        /> */}
+        {children}
+      </body>
     </html>
   );
 }
